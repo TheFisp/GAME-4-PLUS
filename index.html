@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Vittoria! - Indizio</title>
+    <title>Accesso Riservato</title>
     <style>
         :root {
             --bg-color: #00C0E2;
@@ -18,99 +18,186 @@
             background-color: var(--bg-color);
             font-family: 'Georgia', serif;
             color: white;
+            overflow: hidden;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+        }
+
+        /* --- SCHERMATA DI LOGIN --- */
+        #login-screen {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-color: var(--bg-color);
             display: flex;
             flex-direction: column;
             justify-content: center;
             align-items: center;
-            overflow: hidden;
-            position: relative;
+            z-index: 1000;
+            transition: opacity 0.8s ease, visibility 0.8s;
+        }
+
+        #login-screen h2 {
+            margin-bottom: 20px;
+            letter-spacing: 2px;
+            font-weight: normal;
+            opacity: 0.9;
+        }
+
+        input {
+            padding: 12px 25px;
+            font-size: 1.2rem;
+            border-radius: 30px;
+            border: 2px solid white;
+            background: rgba(255, 255, 255, 0.2);
+            color: white;
+            outline: none;
+            text-align: center;
+            transition: all 0.3s;
+        }
+
+        input:focus {
+            background: rgba(255, 255, 255, 0.3);
+            box-shadow: 0 0 15px rgba(255, 255, 255, 0.4);
+        }
+
+        /* Animazione errore */
+        @keyframes shake {
+            0%, 100% { transform: translateX(0); }
+            25% { transform: translateX(-10px); }
+            75% { transform: translateX(10px); }
+        }
+        .error { animation: shake 0.2s ease-in-out 0s 2; border-color: #ff4d4d !important; }
+
+        /* --- CONTENUTO VITTORIA (Nascosto all'inizio) --- */
+        #victory-content {
+            opacity: 0;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            transition: opacity 1.5s ease;
+            text-align: center;
         }
 
         .victory-title {
-            font-size: 4rem;
+            font-size: 4.5rem;
             font-weight: bold;
             text-transform: uppercase;
             color: var(--accent-color);
-            text-shadow: 0 0 20px rgba(255, 215, 0, 0.6);
+            text-shadow: 0 0 25px rgba(255, 215, 0, 0.8);
             margin-bottom: 20px;
             z-index: 10;
-            animation: pulse 2s infinite alternate;
+            animation: pulse 1.5s infinite alternate;
         }
 
         @keyframes pulse {
             from { transform: scale(1); }
-            to { transform: scale(1.05); }
+            to { transform: scale(1.08); }
         }
 
         .clue-container {
             z-index: 10;
-            background: rgba(255, 255, 255, 0.1);
-            padding: 30px;
-            border-radius: 20px;
-            backdrop-filter: blur(10px);
-            border: 1px solid rgba(255, 255, 255, 0.2);
-            text-align: center;
+            background: rgba(255, 255, 255, 0.15);
+            padding: 35px;
+            border-radius: 25px;
+            backdrop-filter: blur(12px);
+            border: 1px solid rgba(255, 255, 255, 0.3);
         }
 
         .clue-text {
-            font-size: 2.2rem;
-            font-family: monospace;
-            letter-spacing: 3px;
+            font-size: 2.5rem;
+            font-family: 'Courier New', Courier, monospace;
+            font-weight: bold;
+            letter-spacing: 4px;
         }
 
-        /* Stile dei coriandoli */
+        /* Coriandoli */
         .confetti {
             position: absolute;
             z-index: 1;
-            top: -10px;
+            top: -20px;
             pointer-events: none;
         }
 
         @keyframes fall {
-            to { transform: translateY(105vh) rotate(360deg); }
+            0% { top: -20px; transform: translateX(0) rotateX(0deg); }
+            100% { top: 110vh; transform: translateX(-25px) rotateX(360deg); }
         }
     </style>
 </head>
 <body>
 
-    <div class="victory-title">Hai Vinto!</div>
+    <div id="login-screen">
+        <h2>Inserisci il Codice</h2>
+        <input type="text" id="pass-input" placeholder="..." autocomplete="off">
+    </div>
 
-    <div class="clue-container">
-        <div style="margin-bottom: 10px; opacity: 0.8;">Il tuo Indizio:</div>
-        <div class="clue-text">Dej Vhqd Rem 👀</div>
+    <div id="victory-content">
+        <div class="victory-title">Hai Vinto!</div>
+        <div class="clue-container">
+            <div style="margin-bottom: 15px; opacity: 0.9;">Il tuo prossimo indizio è:</div>
+            <div class="clue-text">Dej Vhqd Rem 👀</div>
+        </div>
     </div>
 
     <script>
-        const confettiCount = 100;
-        const colors = ['#FFD700', '#FFFFFF', '#FF69B4', '#00E5FF', '#7C4DFF'];
+        const passInput = document.getElementById('pass-input');
+        const loginScreen = document.getElementById('login-screen');
+        const victoryContent = document.getElementById('victory-content');
 
-        function createPiece() {
-            const piece = document.createElement('div');
-            piece.className = 'confetti';
-            
-            // Impostazioni casuali
-            const size = Math.random() * 10 + 5 + 'px';
-            const color = colors[Math.floor(Math.random() * colors.length)];
-            const left = Math.random() * 100 + 'vw';
-            const duration = Math.random() * 3 + 2 + 's';
-            const delay = Math.random() * 5 + 's';
+        // Controllo Password
+        passInput.addEventListener('keypress', function (e) {
+            if (e.key === 'Enter') {
+                // Controllo esatto (Case Sensitive per LUM1NOS1T@)
+                if (passInput.value === 'LUM1NOS1T@') {
+                    unlockSite();
+                } else {
+                    passInput.classList.add('error');
+                    setTimeout(() => {
+                        passInput.classList.remove('error');
+                        passInput.value = '';
+                    }, 400);
+                }
+            }
+        });
 
-            piece.style.width = size;
-            piece.style.height = size;
-            piece.style.backgroundColor = color;
-            piece.style.left = left;
-            piece.style.animation = `fall ${duration} linear ${delay} infinite`;
-            
-            // Variamo la forma (alcuni tondi, alcuni quadrati)
-            if (Math.random() > 0.5) piece.style.borderRadius = '50%';
-
-            document.body.appendChild(piece);
+        function unlockSite() {
+            // Nasconde il login
+            loginScreen.style.opacity = '0';
+            setTimeout(() => {
+                loginScreen.style.visibility = 'hidden';
+                // Mostra la vittoria
+                victoryContent.style.opacity = '1';
+                startConfetti();
+            }, 800);
         }
 
-        // Genera i coriandoli
-        for (let i = 0; i < confettiCount; i++) {
-            createPiece();
+        // Sistema Coriandoli
+        function startConfetti() {
+            const confettiCount = 120;
+            const colors = ['#FFD700', '#FFFFFF', '#FF69B4', '#00E5FF', '#7C4DFF'];
+
+            for (let i = 0; i < confettiCount; i++) {
+                const piece = document.createElement('div');
+                piece.className = 'confetti';
+                const width = Math.random() * 8 + 6;
+                const color = colors[Math.floor(Math.random() * colors.length)];
+                
+                piece.style.width = width + 'px';
+                piece.style.height = (width * 0.8) + 'px';
+                piece.style.backgroundColor = color;
+                piece.style.left = Math.random() * 100 + 'vw';
+                piece.style.animation = `fall ${Math.random() * 3 + 3}s linear ${Math.random() * 5}s infinite`;
+                
+                if (Math.random() > 0.5) piece.style.borderRadius = '50%';
+                document.body.appendChild(piece);
+            }
         }
     </script>
 </body>
 </html>
+
