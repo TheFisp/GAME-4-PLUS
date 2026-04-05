@@ -1,0 +1,116 @@
+<!DOCTYPE html>
+<html lang="it">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Vittoria! - Indizio</title>
+    <style>
+        :root {
+            --bg-color: #00C0E2;
+            --accent-color: #FFD700;
+        }
+
+        body, html {
+            margin: 0;
+            padding: 0;
+            width: 100%;
+            height: 100%;
+            background-color: var(--bg-color);
+            font-family: 'Georgia', serif;
+            color: white;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            overflow: hidden;
+            position: relative;
+        }
+
+        .victory-title {
+            font-size: 4rem;
+            font-weight: bold;
+            text-transform: uppercase;
+            color: var(--accent-color);
+            text-shadow: 0 0 20px rgba(255, 215, 0, 0.6);
+            margin-bottom: 20px;
+            z-index: 10;
+            animation: pulse 2s infinite alternate;
+        }
+
+        @keyframes pulse {
+            from { transform: scale(1); }
+            to { transform: scale(1.05); }
+        }
+
+        .clue-container {
+            z-index: 10;
+            background: rgba(255, 255, 255, 0.1);
+            padding: 30px;
+            border-radius: 20px;
+            backdrop-filter: blur(10px);
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            text-align: center;
+        }
+
+        .clue-text {
+            font-size: 2.2rem;
+            font-family: monospace;
+            letter-spacing: 3px;
+        }
+
+        /* Stile dei coriandoli */
+        .confetti {
+            position: absolute;
+            z-index: 1;
+            top: -10px;
+            pointer-events: none;
+        }
+
+        @keyframes fall {
+            to { transform: translateY(105vh) rotate(360deg); }
+        }
+    </style>
+</head>
+<body>
+
+    <div class="victory-title">Hai Vinto!</div>
+
+    <div class="clue-container">
+        <div style="margin-bottom: 10px; opacity: 0.8;">Il tuo Indizio:</div>
+        <div class="clue-text">Dej Vhqd Rem 👀</div>
+    </div>
+
+    <script>
+        const confettiCount = 100;
+        const colors = ['#FFD700', '#FFFFFF', '#FF69B4', '#00E5FF', '#7C4DFF'];
+
+        function createPiece() {
+            const piece = document.createElement('div');
+            piece.className = 'confetti';
+            
+            // Impostazioni casuali
+            const size = Math.random() * 10 + 5 + 'px';
+            const color = colors[Math.floor(Math.random() * colors.length)];
+            const left = Math.random() * 100 + 'vw';
+            const duration = Math.random() * 3 + 2 + 's';
+            const delay = Math.random() * 5 + 's';
+
+            piece.style.width = size;
+            piece.style.height = size;
+            piece.style.backgroundColor = color;
+            piece.style.left = left;
+            piece.style.animation = `fall ${duration} linear ${delay} infinite`;
+            
+            // Variamo la forma (alcuni tondi, alcuni quadrati)
+            if (Math.random() > 0.5) piece.style.borderRadius = '50%';
+
+            document.body.appendChild(piece);
+        }
+
+        // Genera i coriandoli
+        for (let i = 0; i < confettiCount; i++) {
+            createPiece();
+        }
+    </script>
+</body>
+</html>
